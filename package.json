@@ -1,25 +1,79 @@
 {
-  "name": "Max_ng",
-  "version": "1.0.0",
-  "description": "",
+  "name": "Star-Wars-Api",
+  "version": "1.0.0-dev",
+  "description": "The backend repo built in nodejs for star wars api",
   "main": "index.js",
+  "engines": {
+    "node": "14.15.0",
+    "npm": "6.14.8"
+  },
+  "custom": {
+    "knexfile": "server/database/config/knexfile.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:dev": "nodemon --exec babel-node server",
+    "prod:build": "npm run clean && npm run build && npm run start",
+    "start": "npm run clean && npm run build && node dist/index.js",
+    "start1": "pm2 start node dist/index.js",
+    "stop:all": "pm2 stop all",
+    "build": "babel server --out-dir dist",
+    "clean": "rm -rf ./build ",
+    "test": "nyc mocha --recursive -r esm --exit",
+    "lint": "eslint '**/*.js'",
+    "lint:fix": "prettier-eslint '**/*.js' --write",
+    "list:instance": "pm2 list",
+    "pm2:log": "pm2 log",
+    "coverage": "nyc report --reporter=text-lcov | codecov --pipe",
+    "knex:migrate:make": "knex migrate:make --knexfile %npm_package_custom_knexfile%",
+    "db:seed": "knex seed:run --knexfile %npm_package_custom_knexfile%",
+    "db:migrate": "knex migrate:latest --knexfile %npm_package_custom_knexfile%",
+    "db:rollback": "knex migrate:rollback --knexfile %npm_package_custom_knexfile%",
+    "db:scripts": "babel-node server/helper/dbScriptRunner",
+    "syncenv": "node envcheck.js",
+    "type": "module"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Lanrey/star_wars_api.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Lanrey/star_wars_api/issues"
-  },
-  "homepage": "https://github.com/Lanrey/star_wars_api#readme",
+  "author": "akinsulereolusola",
+  "license": "MIT",
   "dependencies": {
+    "app-root-path": "^3.0.0",
     "cors": "^2.8.5",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1"
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run syncenv && npm run lint:fix && git add . && lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.+(js|jsx)": [
+      "eslint --fix --ext .js ./server",
+      "git add"
+    ],
+    "*.+(json|css|md)": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/node": "^7.5.5",
+    "@babel/plugin-transform-runtime": "^7.9.0",
+    "@babel/polyfill": "^7.4.4",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/register": "^7.5.5",
+    "@babel/runtime": "^7.9.2",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.2",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.6",
+    "mocha": "^8.1.1",
+    "nodemon": "^2.0.4",
+    "prettier-eslint-cli": "^5.0.0"
   }
 }
